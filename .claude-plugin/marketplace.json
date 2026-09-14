@@ -1,12 +1,12 @@
 {
-  "name": "scope-agent",
+  "name": "scope-style",
   "owner": {
     "name": "Nikolay Shopik"
   },
   "description": "Commit message and MR/PR description discipline for Claude Code.",
   "plugins": [
     {
-      "name": "scope-agent",
+      "name": "scope-style",
       "source": "./",
       "description": "Scoped Commits messages and short, review-facing MR/PR descriptions."
     }

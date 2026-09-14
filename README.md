@@ -1,4 +1,4 @@
-# scope-agent
+# scope-style
 
 A Claude Code plugin that keeps commit messages and MR/PR descriptions short and useful to the
 people who read them.
@@ -16,8 +16,8 @@ Status: under active tuning. Rules and caps change as they're measured against r
 ## Install
 
 ```
-/plugin marketplace add nshopik/scope-agent
-/plugin install scope-agent@scope-agent
+/plugin marketplace add nshopik/scope-style
+/plugin install scope-style@scope-style
 ```
 
 Requires `python3` on `PATH`.
