@@ -47,8 +47,14 @@ a hook-filled placeholder.
 - What the change does to resolve the intro.
 - Bullets when several independent pieces; one clause each.
 - Big or multi-file diff → name the spot to read first, inside this part.
-- Never narrate the code path: no internal function names, no struct fields, no
-  step-by-step control flow.
+- Never narrate step-by-step control flow.
+
+### Names
+
+- Describe behaviour in plain words; a backticked code name is the exception.
+- User-facing name (flag, config key, metric, exit code, error string) → no limit.
+- Code name (function, type, field — own code or library) → at most three backticked
+  occurrences in the whole text.
 
 ### Behaviour
 
