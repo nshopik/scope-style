@@ -65,6 +65,13 @@ sub-headings stay `###` (any `##` closes a section); `{over_cap}` is a hook-fill
 - Inline code for identifiers only: file, path, command, config key, label, version, symbol.
 - No inline code for emphasis or ordinary nouns.
 
+### Names
+
+- Describe behaviour in plain words; a backticked code name is the exception.
+- User-facing name (flag, config key, metric, exit code, error string) → no limit.
+- Code name (function, type, field — own code or library) → at most three backticked
+  occurrences in the whole text.
+
 ### Updates
 
 - Findings, decisions, progress → comments.
