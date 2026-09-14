@@ -1,0 +1,9 @@
+{
+  "name": "scope-agent",
+  "version": "0.1.0",
+  "description": "Scoped Commits messages and short, review-facing MR/PR descriptions, enforced by a PreToolUse hook.",
+  "author": { "name": "Nikolay Shopik" },
+  "repository": "https://github.com/nshopik/scope-agent",
+  "license": "MIT",
+  "keywords": ["git", "commit", "pull-request", "merge-request", "scoped-commits"]
+}
