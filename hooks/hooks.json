@@ -16,14 +16,14 @@
             "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/body-cap.py\"",
             "if": "Bash(gh *)",
             "timeout": 5,
-            "statusMessage": "Checking PR description"
+            "statusMessage": "Checking PR or issue description"
           },
           {
             "type": "command",
             "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/body-cap.py\"",
             "if": "Bash(glab *)",
             "timeout": 5,
-            "statusMessage": "Checking MR description"
+            "statusMessage": "Checking MR or issue description"
           }
         ]
       }

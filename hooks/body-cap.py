@@ -11,7 +11,7 @@ made rather than trying to make it.
 Reads the hook payload on stdin. Allows silently (exit 0, no output) on anything
 it cannot confidently parse — a false block is worse than a missed one.
 
-All rule prose lives in the `scope-commit` and `scope-mr` skills, not here: this file
+All rules live in the `scope-commit`, `scope-mr` and `scope-issue` skills, not here: this file
 detects and measures, then quotes back the matching `## <id>` section of the skill for
 that kind. Rule edits go to the skill; only detection logic and the caps belong here.
 
@@ -31,10 +31,10 @@ import subprocess
 import sys
 from pathlib import Path
 
-CAPS = {'commit': 150, 'mr': 300}
+CAPS = {'commit': 150, 'mr': 300, 'issue': 400}
 
 SKILLS_DIR = Path(__file__).resolve().parent.parent / 'skills'
-SKILL = {'commit': 'scope-commit', 'mr': 'scope-mr'}
+SKILL = {'commit': 'scope-commit', 'mr': 'scope-mr', 'issue': 'scope-issue'}
 FALLBACK = 'Follow Scoped Commits — https://scopedcommits.com/'
 
 # Prepended to the style block when the body is also over the ceiling. The style
@@ -178,6 +178,10 @@ def body_issues(body):
 MR_CMD = re.compile(r'\bglab\b(?:[^\n|;&]*\bmerge_requests\b'
                     r'|\s+mr\s+(?:create|update|edit)\b)'
                     r'|\bgh\b\s+pr\s+(?:create|edit)\b')
+
+ISSUE_CMD = re.compile(r'\bglab\b(?:[^\n|;&]*\bissues\b'
+                       r'|\s+issue\s+(?:create|update|edit)\b)'
+                       r'|\bgh\b\s+issue\s+(?:create|edit)\b')
 
 # No regex measures whether a body earns its place, so the gate is procedural:
 # bounce each distinct body once and let re-issuing it be the judgment. MRs are
@@ -350,7 +354,10 @@ def classify(cmd, spans):
     if at is not None:
         return 'commit', at
     at = first_outside(MR_CMD)
-    return ('mr', at) if at is not None else (None, None)
+    if at is not None:
+        return 'mr', at
+    at = first_outside(ISSUE_CMD)
+    return ('issue', at) if at is not None else (None, None)
 
 
 # [^\n]* after the delimiter: a heredoc opener may be followed by more of the
@@ -516,7 +523,8 @@ def main():
         return                                  # subject-only commit, nothing to style
     cap = CAPS[kind]
     over = '' if n <= cap else OVER_CAP.format(
-        what={'commit': 'Commit body', 'mr': 'MR description'}[kind],
+        what={'commit': 'Commit body', 'mr': 'MR description',
+              'issue': 'Issue description'}[kind],
         n=n, cap=cap)
     out = reminder(kind, f'{kind}-style', over_cap=over)
     if over:

@@ -180,3 +180,14 @@ assert first[0] == "DENY" and "deliberately left out" in first[1]
 assert second[0] == "DENY" and "budget" in second[1]
 assert third[0] == "ALLOW+RULES"
 print(f"{'per-gate bounce':34} {'OK':12} 2 deny / 1 pass")
+
+# 11. issues: scope-issue section rides along under the cap, 400-word cap denies.
+under = "gh issue create --title t --body " + json.dumps("word " * 380)
+over = "glab issue create -t t -d " + json.dumps("word " * 420)
+show("issue under cap", under)
+show("issue over cap", over)
+v, r = run(under)
+assert v == "ALLOW+RULES" and "<issue_style>" in r and "## Proposal" in r
+v, r = run(over)
+assert v == "DENY" and "over the 400-word ceiling" in r
+print(f"{'issue gate':34} {'OK':12} 1 deny / 1 pass")
