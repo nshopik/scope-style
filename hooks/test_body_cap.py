@@ -12,11 +12,13 @@ def run(cmd):
     out = p.stdout.strip()
     if not out:
         return "ALLOW-SILENT", ""
-    try:
-        d = json.loads(out)
-        return "DENY", d["hookSpecificOutput"]["permissionDecisionReason"]
-    except json.JSONDecodeError:
-        return "ALLOW+RULES", out
+    return verdict(out)
+
+def verdict(out):
+    h = json.loads(out)["hookSpecificOutput"]
+    if h.get("permissionDecision") == "deny":
+        return "DENY", h["permissionDecisionReason"]
+    return "ALLOW+RULES", h["additionalContext"]
 
 def show(name, cmd):
     v, r = run(cmd)
@@ -133,10 +135,7 @@ def run_in(cmd, cwd):
     out = p.stdout.strip()
     if not out:
         return "ALLOW-SILENT", ""
-    try:
-        return "DENY", json.loads(out)["hookSpecificOutput"]["permissionDecisionReason"]
-    except json.JSONDecodeError:
-        return "ALLOW+RULES", out
+    return verdict(out)
 
 repo = tempfile.mkdtemp()
 def git(*a):

@@ -542,17 +542,16 @@ def main():
                   else None)
         if budget and n > budget and not seen(body, 'budget'):
             return deny(OVER_DIFF.format(n=n, lines=lines, allow=budget) + out)
-    print(out)                                  # allowed, but the rules ride along
+    emit(additionalContext=out)
 
 
 def deny(reason):
-    print(json.dumps({
-        "hookSpecificOutput": {
-            "hookEventName": "PreToolUse",
-            "permissionDecision": "deny",
-            "permissionDecisionReason": reason + CHAINED,
-        }
-    }))
+    emit(permissionDecision="deny", permissionDecisionReason=reason + CHAINED)
+
+
+# PreToolUse plain stdout never reaches the model; only hookSpecificOutput does.
+def emit(**fields):
+    print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", **fields}}))
 
 
 if __name__ == '__main__':
