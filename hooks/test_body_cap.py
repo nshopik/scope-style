@@ -190,3 +190,13 @@ assert v == "ALLOW+RULES" and "<issue_style>" in r and "## Proposal" in r
 v, r = run(over)
 assert v == "DENY" and "over the 400-word ceiling" in r
 print(f"{'issue gate':34} {'OK':12} 1 deny / 1 pass")
+
+# 12. commit cap is 160, matching scope-commit's hard cap.
+def commit_of(n):
+    body = "\n".join(" ".join(["word"] * 10) for _ in range(n // 10))
+    return "git " + C + " -F - <<'EOF'\ndocs: x\n\n" + body + "\nEOF"
+v, r = run(commit_of(150))
+assert "ceiling" not in r
+v, r = run(commit_of(170))
+assert v == "DENY" and "over the 160-word ceiling" in r
+print(f"{'commit cap 160':34} {'OK':12} 150 under / 170 over")
