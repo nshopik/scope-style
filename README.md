@@ -24,6 +24,14 @@ Status: under active tuning. Rules and caps change as they're measured against r
 
 Requires `python3` on `PATH`.
 
+For the [pi](https://github.com/earendil-works/pi) harness:
+
+```
+pi install git:github.com/nshopik/scope-style
+```
+
+pi loads the three skills; the `body-cap.py` hook is Claude Code only.
+
 The rules themselves are in each `SKILL.md`. The hook allows anything it can't parse.
 
 ## Development
