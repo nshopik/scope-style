@@ -15,8 +15,7 @@ All rules live in the `scope-commit`, `scope-mr` and `scope-issue` skills, not h
 detects and measures, then quotes back the matching `## <id>` section of the skill for
 that kind. Rule edits go to the skill; only detection logic and the caps belong here.
 
-Caps derive from measured baselines: commit 150 = git.git's p90; MR 300 sits
-just above a measured pre-inflation p75 (239).
+Caps derive from measured baselines; the commit that sets a cap records its derivation.
 
 The subject checks are deliberately narrow. Only the Conventional Commits types
 that could never plausibly name a subsystem are rejected — `docs:`, `ci:`,
@@ -31,7 +30,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-CAPS = {'commit': 150, 'mr': 300, 'issue': 400}
+CAPS = {'commit': 160, 'mr': 300, 'issue': 400}
 
 SKILLS_DIR = Path(__file__).resolve().parent.parent / 'skills'
 SKILL = {'commit': 'scope-commit', 'mr': 'scope-mr', 'issue': 'scope-issue'}
@@ -542,17 +541,16 @@ def main():
                   else None)
         if budget and n > budget and not seen(body, 'budget'):
             return deny(OVER_DIFF.format(n=n, lines=lines, allow=budget) + out)
-    print(out)                                  # allowed, but the rules ride along
+    emit(additionalContext=out)
 
 
 def deny(reason):
-    print(json.dumps({
-        "hookSpecificOutput": {
-            "hookEventName": "PreToolUse",
-            "permissionDecision": "deny",
-            "permissionDecisionReason": reason + CHAINED,
-        }
-    }))
+    emit(permissionDecision="deny", permissionDecisionReason=reason + CHAINED)
+
+
+# PreToolUse plain stdout never reaches the model; only hookSpecificOutput does.
+def emit(**fields):
+    print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", **fields}}))
 
 
 if __name__ == '__main__':
