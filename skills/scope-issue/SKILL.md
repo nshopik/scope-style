@@ -2,7 +2,7 @@
 name: scope-issue
 description: >
   Issue description writer. Issues are pulled from a board days or weeks later with no
-  conversation context, so the text runs context, then analysis, then a concrete proposal. Use
+  conversation context, so the text runs context, then problem, then a concrete proposal. Use
   when writing or editing an issue (`gh issue create`, `glab issue create`, `-f description=`).
   Also the rule source the `body-cap.py` PreToolUse hook quotes back when it blocks one. Commit
   messages: use `scope-commit`; MR/PR descriptions: use `scope-mr`.
@@ -25,13 +25,13 @@ sub-headings stay `###` (any `##` closes a section); `{over_cap}` is a hook-fill
 
 ### Shape
 
-- Three parts, in order: context, analysis, proposal.
+- Three parts, in order: context, problem, proposal.
 - Context: the conditions that led here.
 - Context opens the description unlabeled. No `## Context` heading.
-- Analysis: the problem or idea the context leads to, under `## Analysis`.
+- Problem: the defect or gap the context leads to, under `## Problem`.
 - Proposal: the next step, under `## Proposal`. Always present.
 - Proposal is concrete: a list of actions, a person to engage, or a named investigation.
-- Never end at analysis.
+- Never end at the problem.
 
 ### Title
 
@@ -55,7 +55,7 @@ sub-headings stay `###` (any `##` closes a section); `{over_cap}` is a hook-fill
 - Context: one paragraph, ~80 words. Never two.
 - Context holds only what's needed to act. The reader already works on the project.
 - Cite the brief or docs for depth; don't repeat them.
-- Analysis carries the substance. Longest part.
+- Problem carries the substance. Longest part.
 - Proposal is the outro.
 
 ### Format
@@ -80,5 +80,6 @@ sub-headings stay `###` (any `##` closes a section); `{over_cap}` is a hook-fill
 
 ### Length
 
-- ~200 words the shape. 400 hard cap.
+- ~250 words the shape. 500 hard cap.
+- Fenced blocks are evidence, not prose; they don't count toward the cap.
 - Context overgrows first. Cut it first.
