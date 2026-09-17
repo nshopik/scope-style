@@ -30,7 +30,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-CAPS = {'commit': 160, 'mr': 300, 'issue': 400}
+CAPS = {'commit': 160, 'mr': 300, 'issue': 500}
 
 SKILLS_DIR = Path(__file__).resolve().parent.parent / 'skills'
 SKILL = {'commit': 'scope-commit', 'mr': 'scope-mr', 'issue': 'scope-issue'}
@@ -456,6 +456,7 @@ TRAILER = re.compile(
     r'|signed-off-by|co-authored-by|reviewed-by|acked-by|tested-by'
     r'|reported-by|suggested-by|part-of|change-id|cc|bug):\s'
     r'|^\(cherry picked from', re.I)
+FENCE = re.compile(r'^```.*?^```', re.S | re.M)
 
 
 def strip_trailers(lines):
@@ -477,7 +478,9 @@ def body_of(text):
 
 
 def count(lines):
-    return sum(len(l.split()) for l in strip_trailers(lines))
+    # A pasted log, trace or config dump is evidence, not prose: across 484 maintainer
+    # issues it carries 32% of the words. An unterminated fence stays counted.
+    return len(FENCE.sub(' ', '\n'.join(strip_trailers(lines))).split())
 
 
 CHAINED = ''

@@ -1,4 +1,4 @@
-import json, os, subprocess, sys, tempfile
+import json, os, shlex, subprocess, sys, tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HOOK = os.path.join(HERE, "body-cap.py")
@@ -180,16 +180,25 @@ assert second[0] == "DENY" and "budget" in second[1]
 assert third[0] == "ALLOW+RULES"
 print(f"{'per-gate bounce':34} {'OK':12} 2 deny / 1 pass")
 
-# 11. issues: scope-issue section rides along under the cap, 400-word cap denies.
-under = "gh issue create --title t --body " + json.dumps("word " * 380)
-over = "glab issue create -t t -d " + json.dumps("word " * 420)
+# 11. issues: scope-issue section rides along under the cap, 500-word cap denies.
+under = "gh issue create --title t --body " + json.dumps("word " * 490)
+over = "glab issue create -t t -d " + json.dumps("word " * 510)
 show("issue under cap", under)
 show("issue over cap", over)
 v, r = run(under)
 assert v == "ALLOW+RULES" and "<issue_style>" in r and "## Proposal" in r
 v, r = run(over)
-assert v == "DENY" and "over the 400-word ceiling" in r
+assert v == "DENY" and "over the 500-word ceiling" in r
 print(f"{'issue gate':34} {'OK':12} 1 deny / 1 pass")
+
+# 11b. a fenced log is evidence, not prose: it does not count toward the ceiling.
+log = "```\n" + "\n".join("word " * 40 for _ in range(10)) + "\n```"
+for prefix, want in (("", "ALLOW+RULES"), ("```\n", "DENY")):
+    cmd = "gh issue create --title t --body " + shlex.quote("word " * 480 + "\n\n" + prefix + log)
+    show("issue with fenced log", cmd)
+    v, r = run(cmd)
+    assert v == want and ("ceiling" in r) == (want == "DENY")
+print(f"{'issue fenced evidence':34} {'OK':12} 400 fenced words free")
 
 # 12. commit cap is 160, matching scope-commit's hard cap.
 def commit_of(n):

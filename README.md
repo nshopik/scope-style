@@ -7,7 +7,7 @@ to the people who read them.
   (`<scope>: <description>`), and a body only when it carries a fact the diff can't show.
 - `scope-mr` skill: review-facing descriptions in up to four parts (why, how, root cause,
   behaviour), never a restatement of the commits.
-- `scope-issue` skill: issues in three parts (context, analysis, proposal) that can be started
+- `scope-issue` skill: issues in three parts (context, problem, proposal) that can be started
   without the conversation that produced them.
 - `body-cap.py` PreToolUse hook: checks `git commit`, `gh pr|issue create|edit`, and
   `glab mr|issue` commands before they run. It blocks rule violations and quotes the matching skill section back

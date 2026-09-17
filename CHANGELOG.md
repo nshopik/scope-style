@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file. The format is b
 
 ## [Unreleased]
 
+### Changed
+
+- `scope-issue` renames its `## Analysis` section to `## Problem`.
+- `scope-issue` raises the issue ceiling to 500 words.
+- `body-cap.py` excludes fenced blocks from every word count.
+
 ## [0.2.0] - 2026-09-18
 
 ### Added
