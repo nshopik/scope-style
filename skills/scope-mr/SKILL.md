@@ -1,12 +1,13 @@
 ---
 name: scope-mr
 description: >
-  Merge-request / pull-request description writer. Review-facing text in three parts — a
-  short intro (the problem removed or the capability added), how the change addresses it,
-  then any behaviour a reviewer cannot read off the diff — never a restatement of the
-  commits. Use when writing or editing an MR/PR description (`glab mr create`, `gh pr
-  create`, `-f description=`). Also the rule source the `body-cap.py` PreToolUse hook
-  quotes back when it blocks one. Commit messages: use `scope-commit` instead.
+  Merge-request / pull-request description writer. Review-facing text in up to four parts —
+  why it is needed (the problem removed or the capability added), how the change addresses
+  it, the root cause of a fixed bug, then any behaviour a reviewer cannot read off the diff —
+  never a restatement of the commits. Use when writing or editing an MR/PR description
+  (`glab mr create`, `gh pr create`, `-f description=`). Also the rule source the
+  `body-cap.py` PreToolUse hook quotes back when it blocks one. Commit messages: use
+  `scope-commit` instead.
 ---
 
 MR description is review-facing. Different text from the commit body. Never `--fill`.
@@ -22,21 +23,19 @@ a hook-filled placeholder.
 
 ### Shape
 
-- Three parts, in order: intro, then how, then behaviour.
+- Parts, in order: why, how, root cause, behaviour.
 - Write each part in prose or `-` bullets.
-- Each part after the intro is optional.
+- Each part after why is optional.
 - Nothing to say for a part → omit it.
 - Under ~50 changed lines → one or two sentences. Anything else goes to the user.
-- Three parts is the ceiling, never the target.
-- Bugfix and feature share this shape; only the emphasis differs.
+- Four parts is the ceiling, never the target.
+- Bugfix and feature share this shape; a feature has no root cause.
 
-### Intro
+### Why
 
 - Always first.
 - One or two sentences.
-- Bugfix: name the symptom or root cause removed.
-- Only a cause you verified. Unverified → describe the change, not why it was
-  needed; a guessed cause reads as a finding and outlives the guess.
+- Bugfix: name the symptom removed.
 - Feature: name what it adds and what it buys.
 - Docs: name what was undocumented.
 - Link the issue it closes.
@@ -44,17 +43,25 @@ a hook-filled placeholder.
 
 ### How
 
-- What the change does to resolve the intro.
+- What the change does to resolve the why.
 - Bullets when several independent pieces; one clause each.
 - Big or multi-file diff → name the spot to read first, inside this part.
 - Never narrate step-by-step control flow.
+
+### Root cause
+
+- Bugfix only.
+- Why already names the cause → omit this part; never say it twice.
+- Why the bug happened, in one or two sentences.
+- Only a cause you verified. Unverified → omit this part; a guessed cause reads as a
+  finding and outlives the guess.
 
 ### Names
 
 - Describe behaviour in plain words; a backticked code name is the exception.
 - User-facing name (flag, config key, metric, exit code, error string) → no limit.
-- Code name (function, type, field — own code or library) → at most three backticked
-  occurrences in the whole text.
+- Code name (function, type, field — own code or library) → at most five distinct names in
+  the whole text; repeating one costs nothing.
 
 ### Behaviour
 
@@ -77,6 +84,8 @@ a hook-filled placeholder.
 - A bare content tag ("Default:", "Deferred:") names the thing, not the rubric — allowed.
 - Per-commit summaries.
 - Restatements of the diff.
+- Restatements of a commit body, except its why, how, or root cause.
+- A single-commit MR may use that commit's body as the description.
 - A sentence the title already says: "this adds / documents / fixes X".
 - Verification logs, test counts.
 - Background already on the issue → link it, don't repeat it.
@@ -86,10 +95,13 @@ a hook-filled placeholder.
 - Risk-grading words: "riskiest", "dangerous", "be careful", "watch out".
 - Mid-sentence bold.
 - `*` bullets — use `-`.
+- `Generated with Claude Code` or any other AI-attribution line, unless the user asks for one.
 
 ### Length
 
-- ~150 words the shape. 300 hard cap. Never a target.
+- Most descriptions fit well under 150 words.
+- 300 hard cap.
+- Never pad a short description toward either number.
 - A small diff binds tighter than the ceiling: the budget scales with the change.
 - Longer than the diff → cut parts, not words.
 
@@ -131,7 +143,7 @@ flushDesignated.
 whole-batch no_sink accounting.
 ```
 
-✅ bugfix — intro, how (bullets fine), behaviour; no rubric headings
+✅ bugfix — why, how (bullets fine), behaviour; no rubric headings
 ```
 A recovered panic in a flush worker was swallowed with no accounting, so
 one bad frame could drop a whole batch while every alert stayed green.
@@ -147,7 +159,7 @@ never hits it.
 Closes #39
 ```
 
-✅ feature — intro, then the user-facing behaviour to know
+✅ feature — why, then the user-facing behaviour to know
 ```
 Adds an opt-in `client-wait-timeout` directive: a client waiting on
 recursion longer than the limit gets SERVFAIL while recursion continues
