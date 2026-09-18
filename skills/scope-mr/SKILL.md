@@ -25,6 +25,7 @@ a hook-filled placeholder.
 
 - Parts, in order: why, how, root cause, behaviour.
 - Write each part in prose or `-` bullets.
+- Two or more commands or snippets → one fenced block, a `#` comment per case; never inline code in bullets.
 - Each part after why is optional.
 - Nothing to say for a part → omit it.
 - Under ~50 changed lines → one or two sentences. Anything else goes to the user.
