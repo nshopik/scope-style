@@ -209,3 +209,43 @@ assert "ceiling" not in r
 v, r = run(commit_of(170))
 assert v == "DENY" and "over the 160-word ceiling" in r
 print(f"{'commit cap 160':34} {'OK':12} 150 under / 170 over")
+
+# 13. bodies reached indirectly: `$(cat)`, `--input` JSON, `gh api`, heredoc-written files.
+words = "word " * 350
+md = wrote("desc.md", words)
+short = wrote("short.md", "word " * 20)
+js = wrote("desc.json", json.dumps({"description": words}))
+gh_js = wrote("gh.json", json.dumps({"body": words}))
+commit_md = wrote("commit170.md", "docs: x\n\n" + "\n".join(["word " * 10] * 17))
+fresh = os.path.join(fd, "fresh.md")                     # written by the command itself
+half = "word " * 200
+q = shlex.quote
+shapes = [
+    ("$(cat) in -f description=", "DENY", f'glab api -X PUT projects/1/merge_requests/9 -f description="$(cat {md})"'),
+    ("$(cat) in --body",          "DENY", f'gh pr edit 9 --body "$(cat {md})"'),
+    ("$(cat) under cap",   "ALLOW+RULES", f'gh pr edit 9 --body "$(cat {short})"'),
+    ("$(cat) in commit -m",       "DENY", "git " + C + f' -m "$(cat {commit_md})"'),
+    ("glab api --input json",     "DENY", f"glab api -X PUT projects/1/merge_requests/9 --input {js}"),
+    ("gh api --input body key",   "DENY", f"gh api -X PATCH repos/o/r/pulls/9 --input {gh_js}"),
+    ("gh api pulls -f body=",     "DENY", f'gh api -X PATCH repos/o/r/pulls/9 -f body="$(cat {md})"'),
+    ("gh api issues -f body=",    "DENY", f"gh api -X PATCH repos/o/r/issues/7 -f body={q('word ' * 550)}"),
+    ("heredoc then --body-file",  "DENY", f"cat > {fresh} <<'EOF'\nit's {words}\nEOF\ngh pr edit 9 --body-file {fresh}"),
+    ("heredoc then @path",        "DENY", f"cat <<'EOF' > {fresh}\n{words}\nEOF\nglab api projects/1/merge_requests -F description=@{fresh}"),
+    ("heredoc appended",          "DENY", f"cat > {fresh} <<'EOF'\n{half}\nEOF\ncat >> {fresh} <<'EOF'\n{half}\nEOF\ngh pr edit 9 --body-file {fresh}"),
+    # Comments, reviews and notes are not the description; reads send no body at all.
+    ("gh api issue comment", "ALLOW-SILENT", f"gh api repos/o/r/issues/7/comments -f body={q(words)}"),
+    ("gh api PR review",     "ALLOW-SILENT", f"gh api repos/o/r/pulls/9/reviews -f body={q(words)}"),
+    ("comment naming /pulls", "ALLOW-SILENT", f"gh api repos/o/r/issues/7/comments -f body={q('see /pulls ' + words)}"),
+    ("comment quoting PR path", "ALLOW-SILENT", f"gh api repos/o/r/issues/7/comments -f body={q('dup of repos/o/r/pulls/3 ' + words)}"),
+    ("glab note naming issues", "ALLOW-SILENT", f"glab api -X POST projects/1/merge_requests/9/notes -f body={q('fixes the issues here ' + 'word ' * 600)}"),
+    ("append to existing file",   "DENY", f"cat >> {wrote('draft.md', half)} <<'EOF'\n{'word ' * 150}\nEOF\ngh pr edit 9 --body-file {os.path.join(fd, 'draft.md')}"),
+    ("glab MR note",         "ALLOW-SILENT", f"glab api -X POST projects/1/merge_requests/9/notes -f body={q(words)}"),
+    ("gh api read piped",    "ALLOW-SILENT", f"gh api repos/o/r/pulls --paginate | python3 - <<'EOF'\n{words}\nEOF"),
+    ("gh api search piped",  "ALLOW-SILENT", f"gh api 'search/issues?q=repo:o/r' | python3 - <<'EOF'\n{words}\nEOF"),
+]
+for name, want, cmd in shapes:
+    show(name, cmd)
+    v, r = run(cmd)
+    assert v == want and ("-word ceiling" in r) == (want == "DENY"), name
+assert not os.path.exists(fresh)
+print(f"{'indirect file bodies measured':34} {'OK':12} {len(shapes)} cases")

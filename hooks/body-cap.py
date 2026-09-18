@@ -2,7 +2,7 @@
 """PreToolUse gate: Scoped Commits subjects, over-long and over-wide bodies,
 descriptions that outrun the diff they describe, `--fill` MRs, and MR
 descriptions that stamp a rung rubric as a heading/lead-in. Text passed by file
-(`gh --body-file`, `git -F <path>`) is measured the same as text on the flag.
+is measured the same as text on the flag.
 
 Also bounces every distinct commit body once (see CONFIRM): whether a body earns
 its place is judgment, not a measurement, so the gate forces the judgment to be
@@ -174,13 +174,24 @@ def body_issues(body):
             + wrap_issues(kept))
 
 
-MR_CMD = re.compile(r'\bglab\b(?:[^\n|;&]*\bmerge_requests\b'
-                    r'|\s+mr\s+(?:create|update|edit)\b)'
-                    r'|\bgh\b\s+pr\s+(?:create|edit)\b')
+# `gh api` on a PR/issue itself, only when it sends a body: a read piped into
+# `python3 - <<EOF` would otherwise have its script measured as the description.
+# The path must be the first argument, or a path quoted in a comment body matches.
+# The `(?![/\w])` guards keep sub-resources (comments, notes) out of both forges.
+GH_API = (r'\bgh\s+api'
+          r'(?=[^\n|;&]*\s(?:-[fF]|--(?:raw-)?field)\s+[\'"]?body=|[^\n|;&]*\s--input\s)'
+          r'(?:\s+(?:-X|--method)[\s=]\w+|\s+--[\w-]+)*'
+          r'\s+[\'"]?/?repos/[^\s\'"]+/{}(?:/\d+)?[\'"]?(?=\s|$)')
 
-ISSUE_CMD = re.compile(r'\bglab\b(?:[^\n|;&]*\bissues\b'
+MR_CMD = re.compile(r'\bglab\b(?:[^\n|;&]*\bmerge_requests(?:/\d+)?(?![/\w])'
+                    r'|\s+mr\s+(?:create|update|edit)\b)'
+                    r'|\bgh\b\s+pr\s+(?:create|edit)\b'
+                    r'|' + GH_API.format('pulls'))
+
+ISSUE_CMD = re.compile(r'\bglab\b(?:[^\n|;&]*\bissues(?:/\d+)?(?![/\w])'
                        r'|\s+issue\s+(?:create|update|edit)\b)'
-                       r'|\bgh\b\s+issue\s+(?:create|edit)\b')
+                       r'|\bgh\b\s+issue\s+(?:create|edit)\b'
+                       r'|' + GH_API.format('issues'))
 
 # No regex measures whether a body earns its place, so the gate is procedural:
 # bounce each distinct body once and let re-issuing it be the judgment. MRs are
@@ -388,19 +399,59 @@ def heredoc_body(spans, after):
     return next((body for start, _, body in spans if start > after), None)
 
 
+# Target of a redirect or `tee` on a heredoc's opener line; group 1 marks an append.
+WRITES = re.compile(r"""(>>|\btee\s+-a\s|>|\btee\s)\s*(['"]?)([^\s'"<>;&|]+)\2""")
+
+# Path as typed -> heredoc body, for files this command writes itself (not yet on
+# disk when the hook runs). `./f.md` and `f.md` do not match.
+WRITTEN = {}
+
+
+def remember_writes(cmd, spans):
+    for start, _, body in spans:
+        line_start = cmd.rfind('\n', 0, start) + 1
+        for m in WRITES.finditer(cmd, line_start, cmd.find('\n', start)):
+            if m.group(1) == '>>' or '-a' in m.group(1):
+                body = file_text(m.group(3)) + '\n' + body
+            WRITTEN[m.group(3)] = body
+
+
 def file_text(path):
-    """`gh --body-file`, `git -F`. Unreadable or stdin measures as nothing, the
-    same as a command that carries no text at all."""
+    """Text of `path`: a file this command writes by heredoc, else disk.
+    Unreadable or stdin measures as nothing, the same as a command that carries
+    no text at all."""
     if path == '-':
         return ''
+    if path in WRITTEN:
+        return WRITTEN[path]
     try:
         return Path(path).read_text(encoding='utf-8', errors='replace')
     except OSError:
         return ''
 
 
-def flag_text(cmd, kind):
-    """Pull the message/description out of explicit flags."""
+CAT_SUB = re.compile(r"""\$\(\s*cat\s+(['"]?)([^\s'"()]+)\1\s*\)""")
+
+
+def expand(value):
+    """A flag value that is exactly `$(cat <path>)` carries that file's text."""
+    m = CAT_SUB.fullmatch(value)
+    return file_text(m.group(2)) if m else value
+
+
+def input_text(path):
+    """`gh|glab api --input <file>`: the description or body key of its JSON."""
+    try:
+        data = json.loads(file_text(path))
+    except ValueError:
+        return ''
+    return (data.get('description') or data.get('body') or '') \
+        if isinstance(data, dict) else ''
+
+
+def flag_text(cmd, kind, field):
+    """Pull the message/description out of explicit flags. `field` is the API
+    key that carries it: `body=` on GitHub, where GitLab's `body=` is a note."""
     try:
         parts = shlex.split(cmd)
     except ValueError:
@@ -413,38 +464,37 @@ def flag_text(cmd, kind):
             # -m, --message, and bundled short flags ending in m (-am, -sm).
             if (p == '--message' or re.fullmatch(r'-[a-zA-Z]*m', p)) \
                     and nxt is not None:
-                out.append(nxt); i += 2; continue
+                out.append(expand(nxt)); i += 2; continue
             if p in ('-F', '--file') and nxt is not None:
                 out.append(file_text(nxt)); i += 2; continue
             if p.startswith('--file='):
                 out.append(file_text(p.split('=', 1)[1]))
             elif p.startswith('--message='):
-                out.append(p.split('=', 1)[1])
+                out.append(expand(p.split('=', 1)[1]))
             elif p.startswith('-m') and len(p) > 2:
-                out.append(p[2:])
+                out.append(expand(p[2:]))
         else:
-            # glab api -F description=@file expands the @path itself, so the
+            # `gh|glab api -F key=@file` expands the @path itself, so the
             # value carries the file rather than the text.
             if p in ('-F', '-f', '--field', '--raw-field') and nxt is not None \
-                    and nxt.startswith('description='):
+                    and nxt.startswith(field):
                 v = nxt.split('=', 1)[1]
-                out.append(file_text(v[1:]) if v.startswith('@') else v)
+                out.append(file_text(v[1:]) if v.startswith('@') else expand(v))
                 i += 2; continue
+            if p == '--input' and nxt is not None:
+                out.append(input_text(nxt)); i += 2; continue
             # gh -F body.md. A value carrying '=' is `gh api -F key=value`, whose
             # short flags are the reverse of glab's, not a file.
             if p in ('-F', '--body-file') and nxt is not None and '=' not in nxt:
                 out.append(file_text(nxt)); i += 2; continue
             if p.startswith('--body-file='):
                 out.append(file_text(p.split('=', 1)[1])); i += 1; continue
-            # glab api -f description=...  /  --description=  /  gh --body
             if p in ('-f', '--field', '--raw-field') and nxt is not None:
-                if nxt.startswith('description='):
-                    out.append(nxt.split('=', 1)[1])
                 i += 2; continue
             if p in ('-d', '--description', '-b', '--body') and nxt is not None:
-                out.append(nxt); i += 2; continue
+                out.append(expand(nxt)); i += 2; continue
             if p.startswith('--description=') or p.startswith('--body='):
-                out.append(p.split('=', 1)[1])
+                out.append(expand(p.split('=', 1)[1]))
         i += 1
     return '\n\n'.join(out) if out else None
 
@@ -505,7 +555,10 @@ def main():
     # line, so there is nothing for the ceiling check to measure.
     if kind == 'mr' and uses_fill(without_heredocs(cmd, spans)):
         return deny(reminder('mr', 'fill'))
-    text = heredoc_body(spans, at) or flag_text(cmd, kind)
+    remember_writes(cmd, spans)
+    # Heredocs blanked: a body shlex cannot split (an apostrophe) hides every flag.
+    field = 'body=' if cmd.startswith('gh', at) else 'description='
+    text = heredoc_body(spans, at) or flag_text(without_heredocs(cmd, spans), kind, field)
     if not text:
         return                                  # editor-based, --no-edit, etc.
     body = text.split('\n')
