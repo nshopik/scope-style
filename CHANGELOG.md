@@ -9,6 +9,11 @@ All notable changes to this project are documented in this file. The format is b
 
 - `scope-issue` and `scope-mr` put two or more commands in one fenced block, not inline code.
 
+### Fixed
+
+- `body-cap.py` measures `gh api` PR/issue bodies and bodies passed by `$(cat <file>)`, `--input`,
+  or a heredoc-written file.
+
 ## [0.3.1] - 2026-09-18
 
 ### Added
