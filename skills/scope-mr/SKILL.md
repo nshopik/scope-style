@@ -95,6 +95,7 @@ a hook-filled placeholder.
 - Risk-grading words: "riskiest", "dangerous", "be careful", "watch out".
 - Mid-sentence bold.
 - `*` bullets — use `-`.
+- Hard-wrapped lines — one line per paragraph or list item.
 - `Generated with Claude Code` or any other AI-attribution line, unless the user asks for one.
 
 ### Length

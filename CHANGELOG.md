@@ -9,6 +9,10 @@ All notable changes to this project are documented in this file. The format is b
 
 - `package.json` declaring the skills as a pi package, installable with `pi install`.
 
+### Changed
+
+- `scope-issue` and `scope-mr` ban hard-wrapped lines in descriptions.
+
 ## [0.3.0] - 2026-09-18
 
 ### Changed
