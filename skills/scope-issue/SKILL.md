@@ -64,6 +64,7 @@ sub-headings stay `###` (any `##` closes a section); `{over_cap}` is a hook-fill
 - One bolded phrase per paragraph at most.
 - Inline code for identifiers only: file, path, command, config key, label, version, symbol.
 - No inline code for emphasis or ordinary nouns.
+- Two or more commands or snippets → one fenced block, a `#` comment per case; never inline code in bullets.
 - One line per paragraph or list item; never hard-wrap.
 
 ### Names

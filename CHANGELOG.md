@@ -5,6 +5,10 @@ All notable changes to this project are documented in this file. The format is b
 
 ## [Unreleased]
 
+### Changed
+
+- `scope-issue` and `scope-mr` put two or more commands in one fenced block, not inline code.
+
 ## [0.3.1] - 2026-09-18
 
 ### Added
