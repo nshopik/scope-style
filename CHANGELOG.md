@@ -5,6 +5,8 @@ All notable changes to this project are documented in this file. The format is b
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-09-20
+
 ### Added
 
 - `scope-mr` puts three or more numbers a reviewer would compare in a table, not prose.
