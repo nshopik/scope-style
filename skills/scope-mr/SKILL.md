@@ -24,8 +24,9 @@ a hook-filled placeholder.
 ### Shape
 
 - Parts, in order: why, how, root cause, behaviour.
-- Write each part in prose or `-` bullets.
+- Write each part in prose, `-` bullets, or a table.
 - Two or more commands or snippets → one fenced block, a `#` comment per case; never inline code in bullets.
+- Three or more numbers a reviewer would compare → one table, a row per case; never prose.
 - Each part after why is optional.
 - Nothing to say for a part → omit it.
 - Under ~50 changed lines → one or two sentences. Anything else goes to the user.
@@ -103,6 +104,7 @@ a hook-filled placeholder.
 
 - Most descriptions fit well under 150 words.
 - 300 hard cap.
+- Fenced blocks and table rows do not count toward the cap.
 - Never pad a short description toward either number.
 - A small diff binds tighter than the ceiling: the budget scales with the change.
 - Longer than the diff → cut parts, not words.

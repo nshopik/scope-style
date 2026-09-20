@@ -200,6 +200,16 @@ for prefix, want in (("", "ALLOW+RULES"), ("```\n", "DENY")):
     assert v == want and ("ceiling" in r) == (want == "DENY")
 print(f"{'issue fenced evidence':34} {'OK':12} 400 fenced words free")
 
+# 11c. table rows are measurements too: charging per cell would price the table
+# above the paragraph it replaces.
+table = "\n".join("| " + " | ".join(["word"] * 6) + " |" for _ in range(20))
+for rows, want in ((table, "ALLOW+RULES"), (table.replace("|", " "), "DENY")):
+    cmd = "gh issue create --title t --body " + shlex.quote("word " * 480 + "\n\n" + rows)
+    show("issue with table", cmd)
+    v, r = run(cmd)
+    assert v == want and ("ceiling" in r) == (want == "DENY")
+print(f"{'issue table rows free':34} {'OK':12} 120 table words free")
+
 # 12. commit cap is 160, matching scope-commit's hard cap.
 def commit_of(n):
     body = "\n".join(" ".join(["word"] * 10) for _ in range(n // 10))

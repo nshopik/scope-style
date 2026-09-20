@@ -8,3 +8,5 @@
   working tree.
 - In `hooks/test_body_cap.py`, match an over-cap deny on `-word ceiling`, not `ceiling`; the
   skill text the hook quotes back contains the bare word.
+- A cap-exemption test (fenced block, table row) runs through `gh issue create`, not `mr()`; the
+  MR path also has a per-diff-line budget that fires first inside this repo.
