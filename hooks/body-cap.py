@@ -507,6 +507,7 @@ TRAILER = re.compile(
     r'|reported-by|suggested-by|part-of|change-id|cc|bug):\s'
     r'|^\(cherry picked from', re.I)
 FENCE = re.compile(r'^```.*?^```', re.S | re.M)
+TABLE = re.compile(r'^[ \t]*\|.*$', re.M)
 
 
 def strip_trailers(lines):
@@ -530,7 +531,10 @@ def body_of(text):
 def count(lines):
     # A pasted log, trace or config dump is evidence, not prose: across 484 maintainer
     # issues it carries 32% of the words. An unterminated fence stays counted.
-    return len(FENCE.sub(' ', '\n'.join(strip_trailers(lines))).split())
+    # Table rows are measurements for the same reason, and charging per cell would
+    # price the tabular form above the paragraph it replaces.
+    text = FENCE.sub(' ', '\n'.join(strip_trailers(lines)))
+    return len(TABLE.sub(' ', text).split())
 
 
 CHAINED = ''

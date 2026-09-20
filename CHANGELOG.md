@@ -5,6 +5,14 @@ All notable changes to this project are documented in this file. The format is b
 
 ## [Unreleased]
 
+### Added
+
+- `scope-mr` puts three or more numbers a reviewer would compare in a table, not prose.
+
+### Changed
+
+- `body-cap.py` does not count table rows toward a body's word ceiling.
+
 ## [0.3.2] - 2026-09-18
 
 ### Changed
