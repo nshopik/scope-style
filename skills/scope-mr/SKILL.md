@@ -38,7 +38,7 @@ a hook-filled placeholder.
 
 - Always first.
 - One or two sentences.
-- Bugfix: name the symptom removed.
+- Bugfix: open with what the code did wrong, not where it happens or what it caused.
 - Feature: name what it adds and what it buys.
 - Docs: name what was undocumented.
 - Link the issue it closes.
@@ -90,7 +90,7 @@ a hook-filled placeholder.
 - Restatements of a commit body, except its why, how, or root cause.
 - A single-commit MR may use that commit's body as the description.
 - A sentence the title already says: "this adds / documents / fixes X".
-- Verification logs, test counts.
+- Verification logs, test counts, before/after measurements.
 - Background already on the issue → link it, don't repeat it.
 - Addressing the reader.
 - Narrating your order of work.
