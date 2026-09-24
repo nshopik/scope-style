@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file. The format is b
 
 ## [Unreleased]
 
+### Changed
+
+- `scope-mr` opens a bugfix description with what the code did wrong, not where it happens or what
+  it caused.
+- `scope-mr` leaves before/after measurements out of a description.
+
 ## [0.3.4] - 2026-09-25
 
 ### Changed
