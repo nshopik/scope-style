@@ -5,6 +5,8 @@ All notable changes to this project are documented in this file. The format is b
 
 ## [Unreleased]
 
+## [0.3.5] - 2026-09-25
+
 ### Changed
 
 - `scope-mr` opens a bugfix description with what the code did wrong, not where it happens or what
