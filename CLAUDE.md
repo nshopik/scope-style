@@ -10,3 +10,5 @@
   skill text the hook quotes back contains the bare word.
 - A cap-exemption test (fenced block, table row) runs through `gh issue create`, not `mr()`; the
   MR path also has a per-diff-line budget that fires first inside this repo.
+- Judge a `scope-mr` change on in-repo runs too (`REPO=<checkout>` in `run_baseline.sh`);
+  diff-only runs lack the context real sessions read and hide what the skill does there.
