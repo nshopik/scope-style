@@ -30,6 +30,7 @@ a hook-filled placeholder.
 - Each part after why is optional.
 - Nothing to say for a part → omit it.
 - Under ~50 changed lines → one or two sentences. Anything else goes to the user.
+- One fix repeated at several sites → a short why paragraph, then a short how paragraph.
 - Four parts is the ceiling, never the target.
 - Bugfix and feature share this shape; a feature has no root cause.
 
