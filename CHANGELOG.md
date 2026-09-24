@@ -5,6 +5,11 @@ All notable changes to this project are documented in this file. The format is b
 
 ## [Unreleased]
 
+### Changed
+
+- `scope-mr` writes a small fix repeated at several sites as a short why paragraph and a short how
+  paragraph.
+
 ## [0.3.3] - 2026-09-20
 
 ### Added
