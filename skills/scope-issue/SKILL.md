@@ -30,8 +30,16 @@ sub-headings stay `###` (any `##` closes a section); `{over_cap}` is a hook-fill
 - Context opens the description unlabeled. No `## Context` heading.
 - Problem: the defect or gap the context leads to, under `## Problem`.
 - Proposal: the next step, under `## Proposal`. Always present.
-- Proposal is concrete: a list of actions, a person to engage, or a named investigation.
+- Proposal is concrete: a list of actions, a person to engage, or a scout's questions.
 - Never end at the problem.
+
+### Scout
+
+- Proposal would need a guess or an assumption → scout issue, not a guessed proposal.
+- Title starts `Scout:`.
+- Proposal lists the questions to answer and a time box.
+- Deliverable: a note in the repo's research docs plus one follow-up issue per gap found. No code.
+- Done when every question has an answer or its own issue.
 
 ### Title
 
