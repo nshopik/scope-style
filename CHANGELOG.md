@@ -5,6 +5,11 @@ All notable changes to this project are documented in this file. The format is b
 
 ## [Unreleased]
 
+### Added
+
+- `scope-issue` writes a `Scout:` issue, with questions and a time box, when a proposal would need
+  a guess.
+
 ## [0.3.5] - 2026-09-25
 
 ### Changed
