@@ -32,6 +32,7 @@ sub-headings stay `###` (any `##` closes a section); `{over_cap}` is a hook-fill
 - Proposal: the next step, under `## Proposal`. Always present.
 - Proposal is concrete: a list of actions, a person to engage, or a scout's questions.
 - Never end at the problem.
+- Meta issue: context, then the checklist. No `## Problem` or `## Proposal`.
 
 ### Scout
 
@@ -52,7 +53,7 @@ sub-headings stay `###` (any `##` closes a section); `{over_cap}` is a hook-fill
 
 - Work spans milestones, or waits on features not built yet → one meta issue tracking it.
 - Title starts `Meta:`.
-- Proposal is a `- [ ]` checklist, one line per piece of work.
+- The checklist follows the context, under no heading; one line per piece of work.
 - A line is a child issue link, or plain text naming the feature it waits on.
 - File a child issue only when its work can start; tick its box when it closes.
 - No milestone; each child carries its own.

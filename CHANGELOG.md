@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file. The format is b
 
 ## [Unreleased]
 
+## [0.3.9] - 2026-09-26
+
+### Changed
+
+- `scope-issue` writes a `Meta:` issue as context plus a checklist, without Problem or Proposal sections.
+
 ## [0.3.8] - 2026-09-26
 
 ### Added
