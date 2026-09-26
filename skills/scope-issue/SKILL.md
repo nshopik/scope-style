@@ -41,6 +41,18 @@ sub-headings stay `###` (any `##` closes a section); `{over_cap}` is a hook-fill
 - Deliverable: a note in the repo's research docs plus one follow-up issue per gap found. No code.
 - Done when every question has an answer or its own issue.
 
+### Evidence
+
+- Milestone exit gate is field evidence → one evidence issue in that milestone.
+- Title starts `Evidence:`.
+- Proposal lists what to deploy and where, the start date, the measurement, and how to collect it.
+- Closes with the milestone.
+
+### Blockers
+
+- Work cannot start until another issue closes → a `Blocked by #<n>` line, one per blocker.
+- Blocker lines end the description.
+
 ### Title
 
 - Under 80 chars.
