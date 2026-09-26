@@ -5,6 +5,13 @@ All notable changes to this project are documented in this file. The format is b
 
 ## [Unreleased]
 
+## [0.3.7] - 2026-09-26
+
+### Added
+
+- `scope-issue` writes an `Evidence:` issue for a milestone gated on field evidence.
+- `scope-issue` ends a description with one `Blocked by #<n>` line per open blocker.
+
 ## [0.3.6] - 2026-09-25
 
 ### Added
