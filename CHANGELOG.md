@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file. The format is b
 
 ## [Unreleased]
 
+## [0.3.8] - 2026-09-26
+
+### Added
+
+- `scope-issue` writes a `Meta:` issue, a checklist of child issues, for work that spans milestones.
+
 ## [0.3.7] - 2026-09-26
 
 ### Added
