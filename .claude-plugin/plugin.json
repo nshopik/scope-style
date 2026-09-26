@@ -1,6 +1,6 @@
 {
   "name": "scope-style",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "Scoped Commits messages and short, review-facing MR/PR descriptions, enforced by a PreToolUse hook.",
   "author": { "name": "Nikolay Shopik" },
   "repository": "https://github.com/nshopik/scope-style",

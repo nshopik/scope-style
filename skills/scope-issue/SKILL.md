@@ -48,6 +48,16 @@ sub-headings stay `###` (any `##` closes a section); `{over_cap}` is a hook-fill
 - Proposal lists what to deploy and where, the start date, the measurement, and how to collect it.
 - Closes with the milestone.
 
+### Meta
+
+- Work spans milestones, or waits on features not built yet → one meta issue tracking it.
+- Title starts `Meta:`.
+- Proposal is a `- [ ]` checklist, one line per piece of work.
+- A line is a child issue link, or plain text naming the feature it waits on.
+- File a child issue only when its work can start; tick its box when it closes.
+- No milestone; each child carries its own.
+- Closes when every line is ticked or ruled out.
+
 ### Blockers
 
 - Work cannot start until another issue closes → a `Blocked by #<n>` line, one per blocker.
@@ -66,7 +76,7 @@ sub-headings stay `###` (any `##` closes a section); `{over_cap}` is a hook-fill
 - Each item independently completable and verifiable.
 - Done-condition not obvious from the items → state it.
 - Default: plain `-` bullets.
-- `- [ ]` boxes only for complex multi-stage work, or a meta issue tracking other issues.
+- `- [ ]` boxes only for complex multi-stage work, or a meta issue's checklist.
 - A paragraph contains an action → pull the action into an item; the paragraph keeps only the why.
 - Terse only after the next action is stated. "Stand up the lab" is a title, not a description.
 
